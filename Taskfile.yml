@@ -1,0 +1,7 @@
+refresh:
+  desc: Refresh the running program.
+  cmds:
+    - pkill server || true
+    - go build -o /go/bin/server . && /go/bin/server &
+  sources:
+    - ./*.go

@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+
+  server:
+    image: server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./:/go/src/github.com/loredami/server/
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - ./docker/postgresql/:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  rabbitmq:
+    image: rabbitmq:latest
+    volumes:
+      - ./docker/rabbitmq/:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+    env_file:
+      - .env

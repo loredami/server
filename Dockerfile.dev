@@ -1,0 +1,10 @@
+FROM instrumentisto/dep as dep
+
+FROM golang:latest
+WORKDIR /go/src/github.com/loredami/server
+COPY . /go/src/github.com/loredami/server
+COPY --from=dep /usr/local/bin/dep /usr/local/bin/
+RUN dep ensure
+RUN go get github.com/go-task/task/cmd/task
+ENTRYPOINT task refresh --watch
+EXPOSE 80

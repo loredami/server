@@ -1,0 +1,14 @@
+#%RAML 1.0
+title: loredami
+version: v1.0.0
+mediaType: application/json
+protocols: [HTTP]
+description: Expose a simple rest API for loredami.
+types:
+  Content: !include types/Status.raml
+/:
+  get:
+    description: Simple hello world example
+    responses:
+      200:
+        description: OK

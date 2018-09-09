@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/loredami/server
 COPY . /go/src/github.com/loredami/server
 COPY --from=dep /usr/local/bin/dep /usr/local/bin/
 RUN dep ensure
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/server .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/server ./cmd/server
 
 FROM alpine:latest
 WORKDIR /root/

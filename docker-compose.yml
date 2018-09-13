@@ -10,7 +10,8 @@ services:
     volumes:
       - ./:/go/src/github.com/loredami/server/
     ports:
-      - "80:80"
+      - "80:80" #server
+      - "81:81" #websocket
     env_file:
       - .env
     entrypoint: ["task", "refresh", "--watch"]

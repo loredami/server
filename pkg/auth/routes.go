@@ -1,9 +1,9 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"fmt"
 )
 
 func AddAuthRoutes(prefix string, router *mux.Router) {

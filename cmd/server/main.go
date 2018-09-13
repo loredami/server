@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/loredami/server/pkg/auth"
-	"fmt"
 	"log"
+	"net/http"
 )
 
 func main() {

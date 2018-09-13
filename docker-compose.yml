@@ -31,3 +31,12 @@ services:
       - "5672:5672"
     env_file:
       - .env
+
+  redis:
+    image: redis:latest
+    volumes:
+      - ./docker/redis/:/data
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env

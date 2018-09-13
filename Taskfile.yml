@@ -2,7 +2,9 @@ refresh:
   desc: Refresh the running program.
   cmds:
     - pkill server || true
+    - pkill websocket || true
     - go build -o /go/bin/server ./cmd/server && /go/bin/server &
+    - go build -o /go/bin/websocket ./cmd/websocket && /go/bin/websocket &
   sources:
     - ./cmd/**/*.go
     - ./pkg/**/*.go

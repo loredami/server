@@ -61,3 +61,7 @@ func (pubSub PubSub) Receive() (*Message, error) {
 		content: msg.Payload,
 	}, nil
 }
+
+func (pubSub PubSub) Close() error {
+	return pubSub.redisPubSub.Close()
+}

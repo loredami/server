@@ -1,4 +1,4 @@
-package redis
+package consumer
 
 import (
 	"fmt"
@@ -13,14 +13,14 @@ func main() {
 	pubSubA, _ := pubsub.NewPubSub("A", rc)
 	pubSubB, _ := pubsub.NewPubSub("B", rc)
 	pubSubC, _ := pubsub.NewPubSub("C", rc)
-	pubSubs := map[string]*pubsub.PubSub{
+	pubSubs := map[string]*pubsub.RedisPubSub{
 		"A": pubSubA,
 		"B": pubSubB,
 		"C": pubSubC,
 	}
 
 	for _, pubSub := range pubSubs {
-		go func(pubSub pubsub.PubSub) {
+		go func(pubSub pubsub.RedisPubSub) {
 			for {
 				fmt.Println("waiting")
 				msg, _ := pubSub.Receive()

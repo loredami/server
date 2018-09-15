@@ -15,13 +15,13 @@ type Client struct {
 	webSockets map[*WebSocket]bool
 	Register   chan *WebSocket
 	Unregister chan *WebSocket
-	pubSub     *pubsub.PubSub
+	pubSub     pubsub.PubSub
 	logger     *log.Logger
 	Write      chan *Message
 	Read       chan *Message
 }
 
-func NewClient(clientId ClientId, hub *Hub, pubSub *pubsub.PubSub, logger *log.Logger) *Client {
+func NewClient(clientId ClientId, hub *Hub, pubSub pubsub.PubSub, logger *log.Logger) *Client {
 	client := Client{
 		id:         clientId,
 		hub:        hub,

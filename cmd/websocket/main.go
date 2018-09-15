@@ -38,16 +38,16 @@ func main() {
 	http.HandleFunc("/ws", func(response http.ResponseWriter, request *http.Request) {
 		upgradedConnection, err := upgrader.Upgrade(response, request, nil)
 		if err != nil {
-			fmt.Fprintf(response, "impossible upgrade connection. Due to: "+err.Error())
+			fmt.Fprint(response, "impossible upgrade connection. Due to: "+err.Error())
 			return
 		}
 		logger.Info("Connection upgraded")
 		webSocket := websocket2.NewWebSocket(upgradedConnection)
 		clientId := websocket2.ClientId("helo") // change in JWT and take userId
 		logger.Info("Connecting to redis")
-		pubSub, err := pubsub.NewPubSub(string(clientId), redisClient)
+		pubSub, err := pubsub.NewRedisPubSub(string(clientId), redisClient)
 		if err != nil {
-			fmt.Fprintf(response, "impossible subsbribe user to notifications. Due to: "+err.Error())
+			fmt.Fprint(response, "impossible subsbribe user to notifications. Due to: "+err.Error())
 			return
 		}
 
@@ -62,7 +62,7 @@ func main() {
 		logger.Info("Client found in hub")
 		client, err := hub.GetClient(clientId)
 		if err != nil {
-			fmt.Fprintf(response, "impossible subsbribe user to notifications. Due to: "+err.Error())
+			fmt.Fprint(response, "impossible subsbribe user to notifications. Due to: "+err.Error())
 			return
 		}
 		client.Register <- webSocket

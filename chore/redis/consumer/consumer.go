@@ -10,9 +10,9 @@ import (
 
 func main() {
 	rc := redis.NewClient(&redis.Options{Addr: "redis:6379"})
-	pubSubA, _ := pubsub.NewPubSub("A", rc)
-	pubSubB, _ := pubsub.NewPubSub("B", rc)
-	pubSubC, _ := pubsub.NewPubSub("C", rc)
+	pubSubA, _ := pubsub.NewRedisPubSub("A", rc)
+	pubSubB, _ := pubsub.NewRedisPubSub("B", rc)
+	pubSubC, _ := pubsub.NewRedisPubSub("C", rc)
 	pubSubs := map[string]*pubsub.RedisPubSub{
 		"A": pubSubA,
 		"B": pubSubB,

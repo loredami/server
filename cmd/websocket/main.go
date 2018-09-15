@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-
 func main() {
 	logger := log.New()
 	redisClient := redis.NewClient(&redis.Options{
@@ -42,7 +41,7 @@ func main() {
 			return
 		}
 		logger.Info("Connection upgraded")
-		webSocket := websocket2.NewWebSocket(upgradedConnection)
+		webSocket := websocket2.NewGorillaWebSocket(upgradedConnection)
 		clientId := websocket2.ClientId("helo") // change in JWT and take userId
 		logger.Info("Connecting to redis")
 		pubSub, err := pubsub.NewRedisPubSub(string(clientId), redisClient)

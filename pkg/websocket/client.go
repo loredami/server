@@ -21,27 +21,34 @@ type Client struct {
 	Read       chan *Message
 }
 
-func NewClient(clientId ClientId, hub *Hub, pubSub pubsub.PubSub, logger *log.Logger) *Client {
-	client := Client{
+func NewClient(
+	clientId ClientId,
+	hub *Hub,
+	pubSub pubsub.PubSub,
+	register chan WebSocket,
+	unregister chan WebSocket,
+	read chan *Message,
+	write chan *Message,
+	logger *log.Logger,
+) *Client {
+	return &Client{
 		id:         clientId,
 		hub:        hub,
 		pubSub:     pubSub,
 		webSockets: map[WebSocket]bool{},
 		logger:     logger,
-		Register:   make(chan WebSocket),
-		Unregister: make(chan WebSocket),
-		Read:       make(chan *Message),
-		Write:      make(chan *Message),
+		Register:   register,
+		Unregister: unregister,
+		Read:       read,
+		Write:      write,
 	}
-	go client.listen()
-	return &client
 }
 
 func (client *Client) Id() ClientId {
 	return client.id
 }
 
-func (client *Client) listen() {
+func (client *Client) Listen() {
 	client.logger.Info("Start listening to the client")
 	ticker := time.NewTicker(PingDuration)
 	defer ticker.Stop()
@@ -80,7 +87,7 @@ func (client *Client) listen() {
 
 func (client *Client) removeWebSocket(webSocket WebSocket) error {
 	if _, exists := client.webSockets[webSocket]; !exists {
-		return errors.New("websocket does not exists")
+		return errors.New("web socket does not exists")
 	}
 	delete(client.webSockets, webSocket)
 	return webSocket.Close()

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"sync"
 )
 
 type Hub struct {
@@ -27,14 +28,19 @@ func NewHub(logger *log.Logger) *Hub {
 
 func (hub *Hub) run() {
 	hub.logger.Info("Starting hub")
+	mutex := sync.Mutex{}
 	for {
 		select {
 		case client := <-hub.Register:
 			hub.logger.Info("Register client")
+			mutex.Lock()
 			(*hub.clients)[client.id] = client
+			mutex.Unlock()
 		case client := <-hub.Unregister:
 			hub.logger.Info("Unregister client")
+			mutex.Lock()
 			delete(*hub.clients, client.Id())
+			mutex.Unlock()
 		}
 	}
 }

@@ -1,0 +1,92 @@
+package websocket
+
+import (
+	"github.com/loredami/server/pkg/pubsub"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"testing"
+)
+
+type WebSocketMock struct {
+	WebSocket
+	mock.Mock
+}
+
+func (webSocketMock *WebSocketMock) Ping() error {
+	return nil
+}
+
+func (webSocketMock *WebSocketMock) Read() (*Message, error) {
+	return &Message{messageType: TextMessage, messageContent: ""}, nil
+}
+
+func (webSocketMock *WebSocketMock) Write(message *Message) error {
+	return nil
+}
+
+func (webSocketMock *WebSocketMock) Close() error {
+	return nil
+}
+
+type PubSubMock struct {
+	pubsub.PubSub
+	mock.Mock
+}
+
+func (pubSubMock *PubSubMock) Receive() (*pubsub.Message, error) {
+	a := make(chan int)
+	<-a // Stop
+
+	return &pubsub.Message{}, nil
+}
+
+func (pubSubMock *PubSubMock) Close() error {
+	return nil
+}
+
+func TestClient(t *testing.T) {
+	clientId := ClientId("a client id")
+	hub := &Hub{}
+	pubSub := &PubSubMock{}
+	logger := &log.Logger{}
+	register := make(chan WebSocket)
+	unregister := make(chan WebSocket)
+	read := make(chan *Message)
+	write := make(chan *Message)
+	client := NewClient(clientId, hub, pubSub, register, unregister, read, write, logger)
+	// Assert client has all the expected values
+	assert.Equal(t, clientId, client.id)
+	assert.Equal(t, hub, client.hub)
+	assert.Equal(t, pubSub, client.pubSub)
+	assert.Equal(t, logger, client.logger)
+	assert.Equal(t, clientId, client.id)
+	assert.Equal(t, map[WebSocket]bool{}, client.webSockets)
+	assert.IsType(t, register, client.Register)
+	assert.IsType(t, unregister, client.Unregister)
+	assert.IsType(t, read, client.Read)
+	assert.IsType(t, write, client.Write)
+	go client.Listen()
+	// Test client integration with PusBus and WebSockets
+	webSocket := &WebSocketMock{}
+	webSocket.On("Wait").Run(func(args mock.Arguments) {
+	})
+	webSocket.AssertNumberOfCalls(t, "Wait", 3)
+	// Start the client integration tests
+	assert.Equal(t, 0, len(client.webSockets))
+	client.Register <- webSocket
+	for len(client.Register) != 0 {
+	}
+	assert.Equal(t, 1, len(client.webSockets))
+	client.Write <- &Message{}
+	client.Write <- &Message{}
+	client.Write <- &Message{}
+	for len(client.Write) != 0 {
+	}
+
+	client.Unregister <- webSocket
+	assert.Equal(t, 1, len(client.webSockets))
+	for len(client.Unregister) != 0 {
+	}
+	assert.Equal(t, 0, len(client.webSockets))
+}

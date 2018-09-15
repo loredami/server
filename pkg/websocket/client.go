@@ -12,9 +12,9 @@ type ClientId string
 type Client struct {
 	id         ClientId
 	hub        *Hub
-	webSockets map[*WebSocket]bool
-	Register   chan *WebSocket
-	Unregister chan *WebSocket
+	webSockets map[WebSocket]bool
+	Register   chan WebSocket
+	Unregister chan WebSocket
 	pubSub     pubsub.PubSub
 	logger     *log.Logger
 	Write      chan *Message
@@ -26,10 +26,10 @@ func NewClient(clientId ClientId, hub *Hub, pubSub pubsub.PubSub, logger *log.Lo
 		id:         clientId,
 		hub:        hub,
 		pubSub:     pubSub,
-		webSockets: map[*WebSocket]bool{},
+		webSockets: map[WebSocket]bool{},
 		logger:     logger,
-		Register:   make(chan *WebSocket),
-		Unregister: make(chan *WebSocket),
+		Register:   make(chan WebSocket),
+		Unregister: make(chan WebSocket),
 		Read:       make(chan *Message),
 		Write:      make(chan *Message),
 	}
@@ -78,7 +78,7 @@ func (client *Client) listen() {
 	}
 }
 
-func (client *Client) removeWebSocket(webSocket *WebSocket) error {
+func (client *Client) removeWebSocket(webSocket WebSocket) error {
 	if _, exists := client.webSockets[webSocket]; !exists {
 		return errors.New("websocket does not exists")
 	}
@@ -86,7 +86,7 @@ func (client *Client) removeWebSocket(webSocket *WebSocket) error {
 	return webSocket.Close()
 }
 
-func (client *Client) readingFromWebSocket(webSocket *WebSocket) {
+func (client *Client) readingFromWebSocket(webSocket WebSocket) {
 	for {
 		message, err := webSocket.Read()
 		if err != nil {

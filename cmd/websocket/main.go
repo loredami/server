@@ -52,7 +52,17 @@ func main() {
 
 		if !hub.HasClient(clientId) {
 			logger.Info("Client not found in hub")
-			client := websocket2.NewClient(clientId, hub, pubSub, logger)
+			client := websocket2.NewClient(
+				clientId,
+				hub,
+				pubSub,
+				make(chan websocket2.WebSocket),
+				make(chan websocket2.WebSocket),
+				make(chan *websocket2.Message),
+				make(chan *websocket2.Message),
+				logger,
+			)
+			go client.Listen()
 			client.Register <- webSocket
 			hub.Register <- client
 			return

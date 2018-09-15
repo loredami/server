@@ -1,0 +1,21 @@
+sudo: required
+
+language: generic
+
+services:
+  - docker
+
+git:
+  depth: 1
+
+install:
+  - docker build . -f Dockerfile.dev -t project-source/server
+  - docker run --name server -itd -e "TRAVIS=$TRAVIS" -e "TRAVIS_JOB_ID=$TRAVIS_JOB_ID" project-source/server bash
+  - docker exec server bash -c "go get golang.org/x/tools/cmd/cover github.com/mattn/goveralls"
+
+script:
+  - docker exec server bash -c "go vet -v ./..."
+  - docker exec server bash -c "go test -v -race -covermode=atomic -coverprofile=coverage.out ./..."
+
+after_success:
+  - docker exec server bash -c "goveralls -coverprofile=coverage.out -service=travis-ci -repotoken=$COVERALLS_TOKEN"
